@@ -1,209 +1,285 @@
-React Js:
-•	Jsbin
-•	JSX
-•	Babel
-•	Returning multiple elements from the the render we can wrap them under an array.
-o	OR
-•	Using the <React.Fragment>{}{}</React.Fragment>
 
-class Headers extends React.Component{
-  
-    constructor(props){
-      super(props);
+class App extends React.Component {
+    state = {
+      projects: [
+        {id: 1, title: "Angular eBook",phase:"todo", completed:false, edit: false},
+        {id: 2, title: "React eBook",phase:"completed", completed:true, edit: false},
+        {id: 3, title: "NodeJS eBook",phase:"todo", completed:false,edit: false},
+        {id: 4, title: "Modern JavaScript eBook",phase:"inprogress", completed:false,edit: false},
+        {id: 5, title: "Node Microservice",phase:"inprogress", completed:false,edit: false},
+      ]
     }
-  render(){
-  return(
-    <h1>{this.props.title}</h1>
-  );
-  }
-}
-
-const SubHeader =(props) =>{
-  const colours = {
-    color: props.color || "blue"
-  }
-  return(
-    <h3 style = {colours} >{props.title}</h3>
-  );
-}
-
-
-ReactDOM.render(
-    <React.Fragment>
-   {<h2>welcome</h2>}
-  {<Headers title = "React ninja"/>}
-  {<SubHeader color= "green" 
-      title = "Welcome back"/>}
-    </React.Fragment>,
-  document.getElementById("root")
-)
-
-App Components and state:
-Declarations:
-class App extends React.Component{
-  constructor(){
-    super();
-    this.state = "default state"
-  }
-  render(){
-    return(
-      <div>
-        <SubHeader color= "green" 
-            title = "App component"/>
-      <p>{this.state}</p>
-      </div>
-      );
-  }
-}
-Another way of declaring the states (Recomended):
-class App extends React.Component{
-  state = "default state"
-  render(){
-    return(
-      <div>
-        <SubHeader color= "green" 
-            title = "App component"/>
-      <p>{this.state}</p>
-      </div>
-      );
-  }
-}
-•	Making a direct property instead of using this statement
-
-
-class App extends React.Component{
-
-  state = {   
-    projects:[
-      {id:1, title:"ebook", phase:"todo", completed:true},
-      {id:2, title:"amazon A to z", phase:"todo", completed:false},
-      {id:3, title:"welcome", phase:"todo", completed:true},
-    ],   
-  }
   
-   addProject = () => {
-    let myid = this.state.projects.length+1;
-    let newProject = {
-      id:myid,
-      title :`Project ${myid}`,
-      phase:"completed",
-      completed:true
-    };
-    let projects = [newProject, ...this.state.projects];
-    this.setState({
-      projects: projects
-    });
-  }
-  render(){       
-    return(
-      <div>
-        <SubHeader color= "green" 
-            title = "App component"/>
-      <hr/>
-      <button
-          onClick={this.addProject}
-          type="button">click here</button>
-        <ul class = "project-list">
-          <ProjectList projects = {this.state.projects}/>
-        </ul>
-      </div>
-      );
-  }
-}
-const ProjectList = ({projects })=>{
-  let projectUI =projects.map((project) =>{
-        return(
-          <li key ={project.id}>
-            {project.title}
-          </li>
-        )
-    })     ;
-  return projectUI;
-}
-class Headers extends React.Component{
-  
-    constructor(props){
-      super(props);
+    onProjectAdd = (project) => {
+      let maxId = +new Date();
+      project.id = maxId;
+      
+      let projects = [project, ...this.state.projects];
+      
+      this.setState({
+        projects
+      });
+   
     }
-  render(){
-  return(
-    <h1>{this.props.title}</h1>
-  );
-  }
-}
-
-const SubHeader =(props) =>{
-  const colours = {
-    color: props.color || "blue"
-  }
-  return(
-    <h3 style = {colours} >{props.title}</h3>
-  );
-}
-
-
-ReactDOM.render(
-  <App/>
-  ,document.getElementById("root")
-)
-
-Setstate code:
-class App extends React.Component {  
-  constructor()
-  {
-    super();
-    this.state = {
-        value: 0,
-        message: 'default hello message'
-      }      
-  }  
-  
-  onClick = () =>{
     
-    this.setState({
-      value: this.state.value + 1
-    });
+    onToggleEditProject = (projectId) => {
+      let projects = this.state.projects.map((p) => {
+        if (p.id == projectId) {
+          p.edit = !p.edit;
+        }
+        return p;
+      });
+      this.setState({
+        projects
+      });
+    }
     
-    this.setState({
-      message: `click-state ${this.state.value}`
-    });
+    onUpdate = (id, project) => {
+      let projects = this.state.projects.map((p) => {
+        if (p.id == id) {
+          p.edit = !p.edit;
+          p.title = project.title;
+          p.phase = project.phase;
+        }
+        return p;
+      });
+      
+      this.setState({
+        projects
+      })
+    }
     
-  } 
-  
-  correctFunction = () =>{    
-    this.setState((prevState, props) =>({
-        value:prevState.value +1
-    })); 
+    onDeleteProject = (id, title) => {
+      if (confirm(`Are you sure you want to delete ${title}?`)) {
+        let projects = this.state.projects.filter((p) => {
+          return p.id != id;
+        });
+        
+        this.setState({
+          projects
+        });
+      }
+      
+    }
     
-    this.setState((prevState, props) =>({
-        message:`click-state ${prevState.value}`
-    }),()=>{
-          console.log(this.state.value)
-
-    }); 
-  }
-  
-  render(){
-    return(    
-      <div>
-        <div> 
-          rendering state value   = {this.state.value} <br/> 
-          <hr/>
-          rendering state message = {this.state.message}
+    render() {
+     
+      return (
+        <div>
+           <Header title="Project Management App">
+              <SubHeader color="red"
+                title="(Kanban based system)" />
+           </Header>
+           <hr/>
+           <ProjectForm onProjectAdd={this.onProjectAdd} />
+           <ProjectList 
+               projects={this.state.projects} 
+               onEdit={this.onToggleEditProject}
+               onUpdate={this.onUpdate}
+               onCancel={this.onToggleEditProject}
+               onDelete={this.onDeleteProject}
+           />
+          
         </div>
-        <br/> 
-        <button onClick={this.onClick}>click me</button>
-        <br/><hr/>
-        <button onClick={this.correctFunction}>corret button</button>
-      </div>
+      );
+    }
+}
+
+class ProjectForm extends React.Component {
+  static propTypes = {
+    onProjectAdd: PropTypes.func.isRequired,
+  }
+  addProject = (event) => {
+     event.preventDefault();
+     let newProject = {
+       title: this.title.value,
+       phase: this.phase.value
+     };
+     this.props.onProjectAdd(newProject);
+  }
+  render() {
+    return (
+      <form className="project-form" onSubmit={this.addProject}>
+        <div>
+          <label>Title: </label>
+          <input type="text" ref={(title)=>{this.title= title}} />
+        </div>
+        <div>
+          <label>Phase: </label>
+          <select ref={(phase) => {this.phase = phase}} >
+             <option value="todo">todo</option>
+             <option value="inprogress">in-progress</option>
+             <option value="completed">completed</option>
+          </select>
+        </div>
+        <div>
+          <button type="submit">submit</button>
+        </div>
+      </form>
     );
   }
 }
 
+class ProjectList extends React.Component {
+   state = {
+     title: "",
+     phase: ""
+   }
+   
+   constructor(props) {
+     super(props);
+   }
+
+   onEdit = (project) => {
+     this.setState({
+       title: project.title,
+       phase: project.phase
+     });
+     
+     this.props.onEdit(project.id);
+   }
+   
+   onTitleChange = (e) => {
+     this.setState({
+       title: e.target.value
+     });
+   }
+   
+   onPhaseChange = (e) => {
+     this.setState({
+       phase: e.target.value
+     });
+   }
+   
+   onUpdate = (id) => {
+     console.log(this.state);
+     this.props.onUpdate(id, this.state);
+   }
+   
+   onDelete = (id, title) => {
+     this.props.onDelete(id, title);
+   }
+   
+   onCancel = (id) => {
+     this.props.onCancel(id);
+   }
+   
+   onEdit = (project) => {
+     this.setState({
+       title: project.title,
+       phase: project.phase
+     });
+     
+     this.props.onEdit(project.id);
+   }
+   
+   editorUI(project) {
+     return (
+       <React.Fragment>
+         <div className="project-content">
+           <input type="text"
+                defaultValue={project.title}
+                onChange={this.onTitleChange}
+           />
+          
+           <select defaultValue={project.phase} 
+              onChange={this.onPhaseChange}>
+             <option value="todo">todo</option>
+             <option value="inprogress">in-progress</option>
+             <option value="completed">completed</option>
+           </select>
+           
+         </div>
+         <div className="project-buttons">
+            <button className="button edit"
+               onClick={()=>this.onUpdate(project.id)}
+            >save</button>
+            <button className="button cancel"
+               onClick={()=>this.onCancel(project.id)}
+            >cancel</button>
+       
+         </div>
+       </React.Fragment>
+     );
+   }
+  
+   itemUI(project) {
+     return (
+       <React.Fragment>
+          <div className="project-content">
+            <span className="title">{project.title}</span>
+            <span className="title">{project.phase}</span>
+          </div>
+          <div className="project-buttons">
+            <button className="button edit"
+               onClick={()=>this.onEdit(project)}>
+               edit
+            </button>
+           <button className="button delete"
+               onClick={()=>this.onDelete(project.id, project.title)}>
+               delete
+            </button>
+            
+          </div>
+       </React.Fragment>
+     );
+   }
+  
+   render() {
+     let {projects} = this.props;
+     let projectUI = projects.map((project) => {
+        let projectItem = project.edit ?
+              this.editorUI(project)
+            :
+              this.itemUI(project)
+        
+        return (
+          <li className="project-item"  key={project.id}>
+             {projectItem} 
+          </li>
+        );
+     });
+     return (
+       <ul className="project-list">
+         {projectUI}
+       </ul>
+     );
+   }
+}
+
+class Header extends React.Component {
+  constructor(props) {
+      super(props);
+  }
+  
+  render() {
+    return (
+      <React.Fragment>
+        <h1>{this.props.title}</h1>
+        {this.props.children}
+      </React.Fragment>
+   );  
+  }
+}
+
+const SubHeader = (props) => {
+  const style = {
+    color: props.color || "blue"
+  }
+  return (
+    <h3 style={style}>{props.title}</h3>
+  );
+}
+
+
 ReactDOM.render(
-  <App />,
+  <App />
+  ,
   document.getElementById("root")
 );
+
+
+
 
 
 
