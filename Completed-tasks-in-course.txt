@@ -1,0 +1,12 @@
+
+Tasks:
+  - React jsx components and elements.
+  - Return multiple elements form  render method. 
+  - Functional components and class components usage.
+  - Stateful components and props 
+******************************************************
+
+  - Creating the App componets 
+  - using different ways to implement setstate components and editing the states.
+  - Adding headers, buttons, textfields, forms.
+  - Creating custom components(funtions) and rendering them.

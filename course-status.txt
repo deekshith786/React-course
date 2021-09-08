@@ -1,0 +1,210 @@
+React Js:
+•	Jsbin
+•	JSX
+•	Babel
+•	Returning multiple elements from the the render we can wrap them under an array.
+o	OR
+•	Using the <React.Fragment>{}{}</React.Fragment>
+
+class Headers extends React.Component{
+  
+    constructor(props){
+      super(props);
+    }
+  render(){
+  return(
+    <h1>{this.props.title}</h1>
+  );
+  }
+}
+
+const SubHeader =(props) =>{
+  const colours = {
+    color: props.color || "blue"
+  }
+  return(
+    <h3 style = {colours} >{props.title}</h3>
+  );
+}
+
+
+ReactDOM.render(
+    <React.Fragment>
+   {<h2>welcome</h2>}
+  {<Headers title = "React ninja"/>}
+  {<SubHeader color= "green" 
+      title = "Welcome back"/>}
+    </React.Fragment>,
+  document.getElementById("root")
+)
+
+App Components and state:
+Declarations:
+class App extends React.Component{
+  constructor(){
+    super();
+    this.state = "default state"
+  }
+  render(){
+    return(
+      <div>
+        <SubHeader color= "green" 
+            title = "App component"/>
+      <p>{this.state}</p>
+      </div>
+      );
+  }
+}
+Another way of declaring the states (Recomended):
+class App extends React.Component{
+  state = "default state"
+  render(){
+    return(
+      <div>
+        <SubHeader color= "green" 
+            title = "App component"/>
+      <p>{this.state}</p>
+      </div>
+      );
+  }
+}
+•	Making a direct property instead of using this statement
+
+
+class App extends React.Component{
+
+  state = {   
+    projects:[
+      {id:1, title:"ebook", phase:"todo", completed:true},
+      {id:2, title:"amazon A to z", phase:"todo", completed:false},
+      {id:3, title:"welcome", phase:"todo", completed:true},
+    ],   
+  }
+  
+   addProject = () => {
+    let myid = this.state.projects.length+1;
+    let newProject = {
+      id:myid,
+      title :`Project ${myid}`,
+      phase:"completed",
+      completed:true
+    };
+    let projects = [newProject, ...this.state.projects];
+    this.setState({
+      projects: projects
+    });
+  }
+  render(){       
+    return(
+      <div>
+        <SubHeader color= "green" 
+            title = "App component"/>
+      <hr/>
+      <button
+          onClick={this.addProject}
+          type="button">click here</button>
+        <ul class = "project-list">
+          <ProjectList projects = {this.state.projects}/>
+        </ul>
+      </div>
+      );
+  }
+}
+const ProjectList = ({projects })=>{
+  let projectUI =projects.map((project) =>{
+        return(
+          <li key ={project.id}>
+            {project.title}
+          </li>
+        )
+    })     ;
+  return projectUI;
+}
+class Headers extends React.Component{
+  
+    constructor(props){
+      super(props);
+    }
+  render(){
+  return(
+    <h1>{this.props.title}</h1>
+  );
+  }
+}
+
+const SubHeader =(props) =>{
+  const colours = {
+    color: props.color || "blue"
+  }
+  return(
+    <h3 style = {colours} >{props.title}</h3>
+  );
+}
+
+
+ReactDOM.render(
+  <App/>
+  ,document.getElementById("root")
+)
+
+Setstate code:
+class App extends React.Component {  
+  constructor()
+  {
+    super();
+    this.state = {
+        value: 0,
+        message: 'default hello message'
+      }      
+  }  
+  
+  onClick = () =>{
+    
+    this.setState({
+      value: this.state.value + 1
+    });
+    
+    this.setState({
+      message: `click-state ${this.state.value}`
+    });
+    
+  } 
+  
+  correctFunction = () =>{    
+    this.setState((prevState, props) =>({
+        value:prevState.value +1
+    })); 
+    
+    this.setState((prevState, props) =>({
+        message:`click-state ${prevState.value}`
+    }),()=>{
+          console.log(this.state.value)
+
+    }); 
+  }
+  
+  render(){
+    return(    
+      <div>
+        <div> 
+          rendering state value   = {this.state.value} <br/> 
+          <hr/>
+          rendering state message = {this.state.message}
+        </div>
+        <br/> 
+        <button onClick={this.onClick}>click me</button>
+        <br/><hr/>
+        <button onClick={this.correctFunction}>corret button</button>
+      </div>
+    );
+  }
+}
+
+ReactDOM.render(
+  <App />,
+  document.getElementById("root")
+);
+
+
+
+
